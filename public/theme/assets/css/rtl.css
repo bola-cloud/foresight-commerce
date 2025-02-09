@@ -1,0 +1,20 @@
+.header .mega-category-menu {
+    position: relative;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    border-left: 1px solid #eee;
+    border-right: none;
+    margin-left: 40px;
+    padding-left: 112px;
+    margin-right: 0;
+    padding-right: 0;
+    cursor: pointer;
+}
+.footer .single-footer h3::before {
+    right: 0;
+    left: auto;
+}
