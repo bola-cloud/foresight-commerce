@@ -51,7 +51,7 @@
                                     <!-- Dark Layer -->
                                     <div class="overlay"></div>
                                     <div class="content">
-                                        <h2>
+                                        <h2 style="color: #fff !important;">
                                             <span>{{ app()->getLocale() === 'ar' ? $slider->ar_title : $slider->en_title }}</span>
                                             {{ $slider->brand }}
                                         </h2>
