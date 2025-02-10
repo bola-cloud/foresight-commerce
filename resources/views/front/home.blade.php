@@ -30,7 +30,7 @@
         text-align: center;
     }
     .hero-area .hero-slider .single-slider .content h2 span{
-        color: #0167f3a3;
+        color: #fff !important;
     }
 
     .hero-area .hero-slider .single-slider .content h3 span{
@@ -52,7 +52,7 @@
                                     <div class="overlay"></div>
                                     <div class="content">
                                         <h2 style="color: #fff !important;">
-                                            <span>{{ app()->getLocale() === 'ar' ? $slider->ar_title : $slider->en_title }}</span>
+                                            <span >{{ app()->getLocale() === 'ar' ? $slider->ar_title : $slider->en_title }}</span>
                                             {{ $slider->brand }}
                                         </h2>
                                         <p>{{ app()->getLocale() === 'ar' ? $slider->ar_description : $slider->en_description }}</p>
