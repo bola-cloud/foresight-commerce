@@ -80,7 +80,7 @@
                     <li class="nav-item">
                         <a class="navbar-brand" href="{{route('dashboard')}}">
                           <img class="brand-logo" alt="modern admin logo" src="{{asset('theme/assets/images/logo/logo.jpg')}}"
-                          style="height: 55px; width: 178px;">
+                          style="height: 55px; width: 78px;">
                           {{-- <h3 class="brand-text">Screen Video </h3> --}}
                         </a>
                     </li>
