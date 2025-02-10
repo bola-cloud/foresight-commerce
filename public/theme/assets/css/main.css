@@ -2957,7 +2957,7 @@ ol {
 .hero-area .hero-slider .single-slider .content {
   padding: 20px 365px 20px 50px;
   position: absolute;
-  left: 0;
+  left: 25%;
   top: 50%;
   -webkit-transform: translateY(-50%);
           transform: translateY(-50%);
