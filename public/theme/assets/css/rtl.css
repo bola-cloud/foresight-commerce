@@ -18,3 +18,14 @@
     right: 0;
     left: auto;
 }
+.product-details-info .info-body .features li{
+    display: block;
+    margin-bottom: 12px;
+    position: relative;
+    padding-right: 15px;
+    padding-left: unset !important;
+}
+.product-details-info .info-body .features li::before {
+    right: 0;
+    left: unset !important;
+}
