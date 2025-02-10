@@ -56,7 +56,7 @@
                                             {{ $slider->brand }}
                                         </h2>
                                         <p>{{ app()->getLocale() === 'ar' ? $slider->ar_description : $slider->en_description }}</p>
-                                        <h3>
+                                        <h3 style="color: #fff !important;">
                                             <span>{{ __('lang.now_only') }}</span> ${{ number_format($slider->price, 2) }}
                                         </h3>
                                         <div class="button">
