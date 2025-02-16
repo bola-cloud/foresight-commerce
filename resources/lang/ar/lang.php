@@ -267,4 +267,5 @@ return [
     'user_administration' => 'إدارة المستخدمين',
     'index' => 'الكل',
     'create' => 'إنشاء',
+    'search_products' => 'ابحث عن منتجات',
 ];

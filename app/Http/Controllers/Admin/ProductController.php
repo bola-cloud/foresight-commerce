@@ -13,10 +13,30 @@ class ProductController extends Controller
     /**
      * Display a listing of the products.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->get();
-        return view('admin.products.index', compact('products'));
+        // Get the search query and category filter from the request
+        $searchQuery = $request->get('search', '');
+        $categoryId = $request->get('category', '');
+
+        // Query products with their categories and apply search/filter conditions
+        $products = Product::with('category')
+            ->when($searchQuery, function($query, $searchQuery) {
+                return $query->where(function($query) use ($searchQuery) {
+                    $query->where('ar_name', 'like', "%$searchQuery%")
+                        ->orWhere('en_name', 'like', "%$searchQuery%");
+                });
+            })
+            ->when($categoryId, function($query, $categoryId) {
+                return $query->where('category_id', $categoryId);
+            })
+            ->paginate(10); // Paginate with 10 items per page
+
+        // Get all categories for the filter dropdown
+        $categories = Category::all();
+
+        // Return the view with the products, categories, and filters
+        return view('admin.products.index', compact('products', 'categories', 'searchQuery', 'categoryId'));
     }
 
     /**

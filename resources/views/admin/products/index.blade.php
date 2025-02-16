@@ -29,7 +29,19 @@
         <a href="{{ route('admin.products.create') }}" class="btn btn-primary">{{ __('lang.add_product') }}</a>
     </div>
 
-    <table class="table table-striped">
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" id="search" class="form-control" placeholder="{{ __('lang.search_products') }}" value="{{ old('search', $searchQuery) }}" style="width: 300px;">
+        <select id="categoryFilter" class="form-control" style="width: 200px;">
+            <option value="">{{ __('lang.select_category') }}</option>
+            @foreach ($categories as $category)
+                <option value="{{ $category->id }}" {{ $category->id == $categoryId ? 'selected' : '' }}>
+                    {{ app()->getLocale() == 'ar' ? $category->ar_name : $category->en_name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <table class="table table-striped" id="productTable">
         <thead>
             <tr>
                 <th>{{ __('lang.image') }}</th>
@@ -43,25 +55,11 @@
         </thead>
         <tbody>
             @foreach ($products as $product)
-                <tr>
-                    <!-- Primary Image -->
+                <tr class="product-item" data-category="{{ $product->category ? $product->category->id : '' }}">
                     <td>
                         @php
-                            // Decode the images column if it's a JSON string
                             $images = is_string($product->images) ? json_decode($product->images, true) : $product->images;
-
-                            // Ensure $images is an array and contains data
-                            if (is_array($images) && count($images) > 0) {
-                                // Find the primary image
-                                $primaryImage = collect($images)->firstWhere('primary', true);
-
-                                // Fallback to the first image if no primary is set
-                                if (!$primaryImage) {
-                                    $primaryImage = $images[0];
-                                }
-                            } else {
-                                $primaryImage = null;
-                            }
+                            $primaryImage = is_array($images) && count($images) > 0 ? collect($images)->firstWhere('primary', true) : $images[0] ?? null;
                         @endphp
 
                         @if ($primaryImage && isset($primaryImage['url']))
@@ -127,29 +125,30 @@
                 </div>
             @endforeach
         </tbody>
-
-
     </table>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center">
+        {!! $products->appends(['search' => $searchQuery, 'category' => $categoryId])->links() !!}
+    </div>
 </div>
 @endsection
 
-@push('css')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    .fixed-height {
-        height: 50px;
-        object-fit: cover;
-    }
-
-    .carousel-control-prev,
-    .carousel-control-next {
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 2;
-    }
-</style>
-@endpush
-
 @push('js')
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Search functionality
+        $('#search').on('keyup', function() {
+            let searchQuery = $(this).val();
+            window.location.href = '{{ route('admin.products.index') }}?search=' + searchQuery + '&category=' + $('#categoryFilter').val();
+        });
+
+        // Category filter functionality
+        $('#categoryFilter').on('change', function() {
+            let categoryId = $(this).val();
+            window.location.href = '{{ route('admin.products.index') }}?search=' + $('#search').val() + '&category=' + categoryId;
+        });
+    });
+</script>
 @endpush

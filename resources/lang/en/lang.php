@@ -283,4 +283,5 @@ return [
     'user_administration' => 'User Administration',
     'index' => 'Index',
     'create' => 'Create',
+    'search_products' => 'Search for Products',
 ];
