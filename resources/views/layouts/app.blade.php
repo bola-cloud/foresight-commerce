@@ -142,9 +142,9 @@
                                     <li>
                                         <a href="{{ route('login') }}">{{ __('lang.header_sign_in') }}</a>
                                     </li>
-                                    <li>
+                                    {{-- <li>
                                         <a href="{{ route('register') }}">{{ __('lang.header_register') }}</a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             @endif
                         </div>
