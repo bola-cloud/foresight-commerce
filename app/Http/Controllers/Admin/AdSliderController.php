@@ -87,20 +87,32 @@ class AdSliderController extends Controller
         return redirect()->route('admin.adsliders.index')->with('success', __('lang.ad_updated'));
     }
 
-    public function destroy(AdSlider $adSlider)
+    public function destroy($id)
     {
-        // Check if the image exists directly in the public storage folder
-        $imagePath = public_path('storage/' . $adSlider->image);
+        $adSlider = AdSlider::find($id); // Manually find the record by ID
 
-        // If the image exists, delete it
-        if (!empty($adSlider->image) && file_exists($imagePath)) {
-            unlink($imagePath); // Delete the image file
+        if (!$adSlider) {
+            return redirect()->route('admin.adsliders.index')->with('error', __('lang.ad_not_found'));
+        }
+
+        // Log the image path for debugging
+        \Log::info('Image path: ' . $adSlider->image);
+
+        // Check if the image exists and delete it using Laravel's Storage system
+        if (!empty($adSlider->image) && Storage::disk('public')->exists($adSlider->image)) {
+            // Delete the image from storage
+            if (Storage::disk('public')->delete($adSlider->image)) {
+                \Log::info('Image deleted successfully.');
+            } else {
+                \Log::error('Failed to delete image.');
+            }
+        } else {
+            \Log::error('Image not found or path is incorrect.');
         }
 
         // Delete the adSlider record from the database
         $adSlider->delete();
 
-        // Redirect back with success message
         return redirect()->route('admin.adsliders.index')->with('success', __('lang.ad_deleted'));
     }
 }
