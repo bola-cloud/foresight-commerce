@@ -222,7 +222,7 @@ return [
     'footer_newsletter_subscribe' => 'اشترك',
     'footer_contact_title' => 'تواصل معنا',
     'footer_contact_phone' => 'الهاتف',
-    'footer_contact_hours_weekdays' => 'من الإثنين إلى الجمعة',
+    'footer_contact_hours_weekdays' => 'من السبت إلى الخميس',
     'footer_contact_hours_weekend' => 'السبت',
     'footer_links_title' => 'روابط سريعة',
     'footer_categories_title' => 'الأقسام',

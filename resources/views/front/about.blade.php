@@ -5,9 +5,9 @@
 @section('content')
     <style>
         .about-us .content-left img {
-            width: 500px;
+            width: 300px;
             border-radius: 4px;
-            height: 190px;
+            height: 210px;
         }
     </style>
     <!-- Start Breadcrumbs -->
@@ -37,10 +37,7 @@
                 <!-- Logo Image -->
                 <div class="col-lg-6 col-md-12 col-12 mb-4 mb-lg-0">
                     <div class="content-left text-center">
-                        <img src="{{ asset('theme/assets/images/logo/white tiger.jpeg') }}" class="img-fluid rounded shadow" alt="{{ __('lang.company_name') }}">
-                    </div>
-                    <div class="content-left text-center mt-3">
-                        <img src="{{ asset('theme/assets/images/logo/logo labpyam celeste bordes.png') }}" class="img-fluid rounded shadow" alt="{{ __('lang.company_name') }}">
+                        <img src="{{asset('theme/assets/images/logo/logo.jpg')}}" class="img-fluid rounded shadow" alt="{{ __('lang.company_name') }}">
                     </div>
                 </div>
                 <!-- Text Content -->

@@ -244,8 +244,8 @@
                     <div class="nav-social">
                         <h5 class="title">{{ __('lang.follow_us') }}:</h5>
                         <ul>
-                            <li><a href="https://www.facebook.com/laboratoriopyam"><i class="lni lni-facebook-filled"></i></a></li>
-                            <li><a href="https://www.instagram.com/laboratoriopyam/"><i class="lni lni-instagram"></i></a></li>
+                            <li><a href="https://www.facebook.com/ForeSightEgypt?mibextid=ZbWKwL"><i class="lni lni-facebook-filled"></i></a></li>
+                            <li><a href="https://www.tiktok.com/@user94828259657222?_t=ZS-8txrW1V6lHD&_r=1"><i class="lni lni-tiktok"></i></a></li>
                         </ul>
                     </div>
                 </div>
@@ -304,8 +304,7 @@
                                 <h3>{{ __('lang.footer_contact_title') }}</h3>
                                 <p class="phone">Mobile: 01000808147</p>
                                 <ul>
-                                    <li><span>{{ __('lang.footer_contact_hours_weekdays') }}: </span> 9:00 AM - 8:00 PM</li>
-                                    <li><span>{{ __('lang.footer_contact_hours_weekend') }}: </span> 10:00 AM - 6:00 PM</li>
+                                    <li><span>{{ __('lang.footer_contact_hours_weekdays') }}: </span><span> 10:00 AM - 6:00 PM</li>
                                 </ul>
                                 <p class="mail">
                                     <a href="mailto:sales@foresightegypt.com">sales@foresightegypt.com</a>
@@ -347,8 +346,8 @@
                             <div class="single-footer f-social">
                                 <h3>{{ __('lang.footer_follow_us') }}</h3>
                                 <ul class="socila d-flex">
-                                    <li class="p-2"><a href="https://www.facebook.com/laboratoriopyam"><i class="lni lni-facebook-filled"></i></a></li>
-                                    <li class="p-2"><a href="https://www.instagram.com/laboratoriopyam/"><i class="lni lni-instagram"></i></a></li>
+                                    <li class="p-2"><a href="https://www.facebook.com/ForeSightEgypt?mibextid=ZbWKwL"><i class="lni lni-facebook-filled"></i></a></li>
+                                    <li class="p-2"><a href="https://www.tiktok.com/@user94828259657222?_t=ZS-8txrW1V6lHD&_r=1"><i class="lni lni-tiktok"></i></a></li>
                                 </ul>
                             </div>
                             <!-- End Single Widget -->
