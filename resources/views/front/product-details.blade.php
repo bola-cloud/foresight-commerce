@@ -59,7 +59,7 @@
                             <h3 class="price">${{ number_format($product->price, 2) }}</h3>
                             <p class="info-text">{{ app()->getLocale() === 'ar' ? $product->ar_description : $product->en_description }}</p>
                             <div class="bottom-content">
-                                <div class="row align-items-end">
+                                {{-- <div class="row align-items-end">
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="button cart-button">
                                             <button class="btn" style="width: 100%;">{{ __('lang.add_to_cart') }}</button>
@@ -70,7 +70,7 @@
                                             <button class="btn"><i class="lni lni-heart"></i> {{ __('lang.to_wishlist') }}</button>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

@@ -192,7 +192,7 @@
                             <div class="nav-hotline">
                                 <i class="lni lni-phone"></i>
                                 <h3>{{ __('lang.hotline') }}:
-                                    <span  dir="ltr">(+20) 0100 4345405</span>
+                                    <span  dir="ltr">(+20) 01000808147</span>
                                 </h3>
                             </div>
                         </div>
@@ -267,7 +267,7 @@
                         <div class="col-lg-3 col-md-4 col-12">
                             <div class="footer-logo">
                                 <a href="{{ route('home') }}">
-                                    <img src="{{ asset('theme/assets/images/logo/white-logo.svg') }}" alt="Logo">
+                                    <img src="{{asset('theme/assets/images/logo/logo.jpg')}}" height="140" width="100" alt="Logo">
                                 </a>
                             </div>
                         </div>
@@ -302,13 +302,13 @@
                             <!-- Single Widget -->
                             <div class="single-footer f-contact">
                                 <h3>{{ __('lang.footer_contact_title') }}</h3>
-                                <p class="phone">Mobile: 002 0100 4345405</p>
+                                <p class="phone">Mobile: 01000808147</p>
                                 <ul>
                                     <li><span>{{ __('lang.footer_contact_hours_weekdays') }}: </span> 9:00 AM - 8:00 PM</li>
                                     <li><span>{{ __('lang.footer_contact_hours_weekend') }}: </span> 10:00 AM - 6:00 PM</li>
                                 </ul>
                                 <p class="mail">
-                                    <a href="mailto:Whitetiger.pyam@gmail.com">Whitetiger.pyam@gmail.com</a>
+                                    <a href="mailto:sales@foresightegypt.com">sales@foresightegypt.com</a>
                                 </p>
                             </div>
                             <!-- End Single Widget -->
