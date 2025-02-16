@@ -89,11 +89,18 @@ class AdSliderController extends Controller
 
     public function destroy(AdSlider $adSlider)
     {
-        // Delete the image
-        Storage::disk('public')->delete($adSlider->image);
+        // Check if the image exists directly in the public storage folder
+        $imagePath = public_path('storage/' . $adSlider->image);
 
+        // If the image exists, delete it
+        if (!empty($adSlider->image) && file_exists($imagePath)) {
+            unlink($imagePath); // Delete the image file
+        }
+
+        // Delete the adSlider record from the database
         $adSlider->delete();
 
+        // Redirect back with success message
         return redirect()->route('admin.adsliders.index')->with('success', __('lang.ad_deleted'));
     }
 }
