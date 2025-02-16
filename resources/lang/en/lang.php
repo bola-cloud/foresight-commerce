@@ -281,4 +281,6 @@ return [
     'leave_blank_if_not_changing' => 'Leave blank if you do not want to change it',
     'save' => 'Save',
     'user_administration' => 'User Administration',
+    'index' => 'Index',
+    'create' => 'Create',
 ];

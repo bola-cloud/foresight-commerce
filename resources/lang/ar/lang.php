@@ -265,4 +265,6 @@ return [
     'leave_blank_if_not_changing' => 'اتركه فارغًا إذا كنت لا تريد تغييره',
     'save' => 'حفظ',
     'user_administration' => 'إدارة المستخدمين',
+    'index' => 'الكل',
+    'create' => 'إنشاء',
 ];
