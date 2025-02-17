@@ -215,6 +215,13 @@
                                 </li>
                             </ul>
                         </li>
+
+                        <li class="nav-item {{ Route::currentRouteName() == 'admin.messages.index' ? 'active' : '' }}">
+                            <a href="{{ route('admin.messages.index') }}">
+                                <i class="la la-share-alt"></i>
+                                <span class="menu-title" data-i18n="nav.morris_charts.main">{{ __('lang.show_messages') }}</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

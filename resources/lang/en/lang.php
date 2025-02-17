@@ -238,7 +238,7 @@ return [
     'footer_newsletter_subscribe' => 'Subscribe',
     'footer_contact_title' => 'Get In Touch With Us',
     'footer_contact_phone' => 'Phone',
-    'footer_contact_hours_weekdays' => 'Monday to Friday',
+    'footer_contact_hours_weekdays' => 'Saturday to Thursday',
     'footer_contact_hours_weekend' => 'Saturday',
     'footer_links_title' => 'Quick Links',
     'footer_categories_title' => 'Categories',
@@ -258,7 +258,17 @@ return [
     'team' => 'Our team consists of highly qualified engineers and technicians to ensure service quality.',
     'partners' => 'We collaborate with leading global companies in the calibration of testing devices, fault detection, and manufacturing of reliable spare parts for diesel fuel injection systems.',
     'previous_work' => 'We have a prestigious track record with major companies across various industries.',
-    
+
+    // Contact Form Section
+    'contact_form_title' => 'Send Us a Message',
+    'contact_form_name_label' => 'Your Name',
+    'contact_form_name_placeholder' => 'Enter your name',
+    'contact_form_email_label' => 'Your Email',
+    'contact_form_email_placeholder' => 'Enter your email',
+    'contact_form_message_label' => 'Your Message',
+    'contact_form_message_placeholder' => 'Write your message',
+    'contact_form_button' => 'Send Message',
+
     //user
     'user_management' => 'User Management',
     'create_user' => 'Create User',
@@ -287,4 +297,5 @@ return [
     'index' => 'Index',
     'create' => 'Create',
     'search_products' => 'Search for Products',
+    'message_sent_success' => 'Message sent successfully!',
 ];

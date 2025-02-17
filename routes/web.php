@@ -29,6 +29,7 @@ Route::group([
     Route::post('/products/upload', [\App\Http\Controllers\Admin\ProductController::class, 'upload'])->name('admin.products.upload');
     Route::delete('/admin/products/temp-image', [\App\Http\Controllers\Admin\ProductController::class, 'deleteTempImage'])->name('admin.products.delete_temp_image');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
+    Route::resource('messages', \App\Http\Controllers\Admin\MessageAdminController::class)->names('admin.messages');
 });
 
 Route::group([
@@ -42,7 +43,7 @@ Route::group([
     Route::get('/products/{category}', [\App\Http\Controllers\Front\ProductsController::class, 'filterByCategory'])->name('products.filterByCategory');
     Route::get('/about', [\App\Http\Controllers\Front\HomeController::class, 'about'])->name('about');
     Route::get('/contact', [\App\Http\Controllers\Front\HomeController::class, 'contact'])->name('contact');
-    Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+    Route::post('/contact', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
     Route::get('/search', [\App\Http\Controllers\Front\HomeController::class, 'search'])->name('search');
 
 });

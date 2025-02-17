@@ -231,7 +231,7 @@ return [
     'footer_copyright' => 'جميع الحقوق محفوظة. تصميم وتطوير بواسطة مزايا.',
     'page_title' => 'من نحن',
     'home' => 'الرئيسية',
-    
+
     //about us
     'about_heading' => 'فورسايت مصر',
     'about_description_1' => 'شركة مصرية تأسست عام 2013 بهدف سد احتياج السوق المصري المتزايد على طلب حلول الصيانة المتكاملة لمنظومات حقن وقود الديزل.',
@@ -243,6 +243,16 @@ return [
     'team' => 'يضم فريقنا مجموعة من الكوادر المتخصصة تشمل مهندسين وفنيين على أعلى مستوى لضمان جودة خدماتنا.',
     'partners' => 'نتعاون مع مجموعة من الشركات العالمية التي حققت الريادة في مجالات معايرة أجهزة الاختبار والكشف وتصنيع قطع الغيار ذات الاعتمادية لمنظومات حقن وقود الديزل.',
     'previous_work' => 'لدينا سابقة أعمال مشرفة مع كبرى الشركات بمختلف القطاعات.',
+
+    // Contact Form Section
+    'contact_form_title' => 'أرسل لنا رسالة',
+    'contact_form_name_label' => 'اسمك',
+    'contact_form_name_placeholder' => 'أدخل اسمك',
+    'contact_form_email_label' => 'بريدك الإلكتروني',
+    'contact_form_email_placeholder' => 'أدخل بريدك الإلكتروني',
+    'contact_form_message_label' => 'رسالتك',
+    'contact_form_message_placeholder' => 'اكتب رسالتك',
+    'contact_form_button' => 'أرسل الرسالة',
 
     //user
     'user_management' => 'إدارة المستخدمين',
@@ -272,4 +282,5 @@ return [
     'index' => 'الكل',
     'create' => 'إنشاء',
     'search_products' => 'ابحث عن منتجات',
+    'message_sent_success' => 'تم إرسال الرسالة بنجاح.',
 ];
