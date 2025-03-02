@@ -306,4 +306,5 @@ return [
     'posted_on ' => 'نشر في',
     'back_to_blogs' => 'العودة إلى المدونات',
     'menu_blogs' => 'المدونات',
+    'no_image_available' => 'لا توجد صورة متاحة',
 ];

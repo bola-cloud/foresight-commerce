@@ -322,4 +322,5 @@ return [
     'posted_on' => 'Posted on',
     'back_to_blogs' => 'Back to Blogs',
     'menu_blogs' => 'Blogs',
+    'no_image_available' => 'No image available',
 ];
