@@ -19,6 +19,8 @@
 
     @if(app()->getLocale() === 'ar')
         <link rel="stylesheet" href="{{asset('theme/assets/css/rtl.css')}}" />
+    @else
+        <link rel="stylesheet" href="{{asset('theme/assets/css/ltr.css')}}" />
     @endif
     <style>
         .navbar-nav .nav-item {
@@ -51,7 +53,11 @@
             background-color: #f5f5f5;
         }
 
-
+        @media (max-width: 767px) {
+            .header .mobile-menu-btn .toggler-icon {
+                background-color: #081828 !important;
+            }
+        }
     </style>
 </head>
 
@@ -220,13 +226,15 @@
                             </ul>
                         </div>
 
-                        <nav class="navbar navbar-expand-lg">
+                        <nav class="navbar navbar-expand-lg" >
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#navbarSupportedContent">
+                                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="toggler-icon"></span>
                                 <span class="toggler-icon"></span>
                                 <span class="toggler-icon"></span>
                             </button>
+
                             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                 <ul class="navbar-nav ms-auto">
                                     <li class="nav-item">
@@ -234,6 +242,10 @@
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.index') ? 'active' : '' }}">{{ __('lang.menu_products') }}</a>
+                                    </li>
+                                    {{-- blogs --}}
+                                    <li class="nav-item">
+                                        <a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.index') ? 'active' : '' }}">{{ __('lang.menu_blogs') }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -321,6 +333,8 @@
                                     <li><a href="{{ route('products.index') }}">{{ __('lang.menu_products') }}</a></li>
                                     <li><a href="{{ route('about') }}">{{ __('lang.menu_about') }}</a></li>
                                     <li><a href="{{ route('contact') }}">{{ __('lang.menu_contact') }}</a></li>
+                                    {{-- blogs --}}
+                                    <li><a href="{{ route('blogs.index') }}">{{ __('lang.menu_blogs') }}</a></li>
                                 </ul>
                             </div>
                             <!-- End Single Widget -->
@@ -397,7 +411,7 @@
     </a>
 
     <!-- ========================= JS here ========================= -->
-    <script src="{{asset('theme/assets/js/bootstrap.min.js')}}"></script>
+    {{-- <script src="{{asset('theme/assets/js/bootstrap.min.js')}}"></script> --}}
     <script src="{{asset('theme/assets/js/tiny-slider.js')}}"></script>
     <script src="{{asset('theme/assets/js/glightbox.min.js')}}"></script>
     <script src="{{asset('theme/assets/js/main.js')}}"></script>

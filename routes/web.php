@@ -30,6 +30,7 @@ Route::group([
     Route::delete('/admin/products/temp-image', [\App\Http\Controllers\Admin\ProductController::class, 'deleteTempImage'])->name('admin.products.delete_temp_image');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
     Route::resource('messages', \App\Http\Controllers\Admin\MessageAdminController::class)->names('admin.messages');
+    Route::resource('admin/blogs', \App\Http\Controllers\Admin\BlogController::class)->names('admin.blogs');
 });
 
 Route::group([
@@ -45,5 +46,6 @@ Route::group([
     Route::get('/contact', [\App\Http\Controllers\Front\HomeController::class, 'contact'])->name('contact');
     Route::post('/contact', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
     Route::get('/search', [\App\Http\Controllers\Front\HomeController::class, 'search'])->name('search');
-
+    Route::get('/blogs', [\App\Http\Controllers\Front\BlogController::class, 'index'])->name('blogs.index');
+    Route::get('/blogs/{slug}', [\App\Http\Controllers\Front\BlogController::class, 'show'])->name('blogs.show');
 });

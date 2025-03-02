@@ -215,7 +215,30 @@
                                 </li>
                             </ul>
                         </li>
-
+                        {{-- blogs --}}
+                        <li class="nav-item has-sub {{ Request::is('admin/blogs*') ? 'open' : '' }}">
+                            <a href="javascript:void(0)">
+                                <i class="la la-newspaper-o"></i>
+                                <span class="menu-title
+                                ">{{ __('lang.blogs') }}</span>
+                            </a>
+                            <ul class="menu-content">
+                                <li class="{{ Route::currentRouteName() == 'admin.blogs.index' ? 'active' : '' }}">
+                                    <a href="{{ route('admin.blogs.index') }}">
+                                        <i class="la la-list
+                                        "></i>
+                                        <span class="menu-item">{{ __('lang.blog_list') }}</span>
+                                    </a>
+                                </li>
+                                <li class="{{ Route::currentRouteName() == 'admin.blogs.create' ? 'active' : '' }}">
+                                    <a href="{{ route('admin.blogs.create') }}">
+                                        <i class="la la-plus
+                                        "></i>
+                                        <span class="menu-item">{{ __('lang.add_blog') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="nav-item {{ Route::currentRouteName() == 'admin.messages.index' ? 'active' : '' }}">
                             <a href="{{ route('admin.messages.index') }}">
                                 <i class="la la-share-alt"></i>
@@ -319,7 +342,25 @@
             observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         });
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/tinymce/tinymce.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            tinymce.init({
+                selector: 'textarea.tinymce-editor',
+                plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                toolbar_mode: 'floating',
+                height: 400,
+                automatic_uploads: false, // Prevents automatic image requests
+                image_advtab: false, // Disables image advanced tab
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        tinymce.triggerSave(); // Ensures TinyMCE content is saved correctly
+                    });
+                }
+            });
+        });
+    </script>
     @livewireScripts
     @stack('js')
 

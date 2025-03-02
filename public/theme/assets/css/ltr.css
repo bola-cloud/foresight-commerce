@@ -1,0 +1,7 @@
+@media (max-width: 767px) {
+    .header .navbar-brand {
+        display: block;
+        text-align: right;
+        padding: 0;
+    }
+}
