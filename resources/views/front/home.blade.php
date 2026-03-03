@@ -93,15 +93,13 @@
                         <div class="single-product">
                             <div class="product-image">
                                 <!-- Display product's primary image -->
-                                @if (!empty($product->images))
-                                    @php
-                                        $primaryImage = collect($product->images)->firstWhere('primary', true)['url'] ?? $product->images[0]['url'];
-                                    @endphp
-                                    <img src="{{ $primaryImage }}" alt="{{ app()->getLocale() === 'ar' ? $product->ar_name : $product->en_name }}" height="260">
-                                @else
-                                    <!-- Fallback image if no images are available -->
-                                    <img src="{{ asset('theme/assets/images/products/default.jpg') }}" alt="No image available">
-                                @endif
+                                @php
+                                    $placeholder = asset('images/no-image.svg');
+                                    $images = is_array($product->images) ? $product->images : (is_string($product->images) ? json_decode($product->images, true) : ($product->images ?? []));
+                                    $primary = collect($images)->firstWhere('primary', true);
+                                    $primaryImage = data_get($primary, 'url') ?? data_get($images, '0.url') ?? $placeholder;
+                                @endphp
+                                <img src="{{ $primaryImage }}" alt="{{ app()->getLocale() === 'ar' ? $product->ar_name : $product->en_name }}" height="260">
 
                                 <div class="button">
                                     <a href="{{ route('product.details', $product->id) }}" class="btn">

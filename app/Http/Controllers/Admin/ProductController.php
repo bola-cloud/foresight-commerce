@@ -65,60 +65,68 @@ class ProductController extends Controller
             'ar_features.*' => 'string|max:255', // Validate each feature
             'en_features' => 'required|array|min:1', // Must be an array with at least one entry
             'en_features.*' => 'string|max:255', // Validate each feature
-            'images' => 'required|string', // Validate as a JSON string
+            'images' => 'nullable|string', // Validate as a JSON string (optional)
             'ar_manufacturer' => 'nullable|string',
             'en_manufacturer' => 'nullable|string',
             'primary_image' => 'nullable|string',
         ]);
+        $processedImages = [];
 
-        $imagesArray = json_decode($request->images, true); // Decode JSON into an array
+        // Only process images if they were sent and the decoded array is non-empty
+        if ($request->has('images')) {
+            $imagesArray = json_decode($request->images, true); // Decode JSON into an array
 
-        if (!is_array($imagesArray)) {
-            return redirect()->back()->withErrors(['images' => 'Invalid images format.']);
-        }
-
-        try {
-            // Process images array
-            $processedImages = collect($imagesArray)->map(function ($image) use ($request) {
-                $decodedImage = json_decode($image, true);
-                $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
-                $newPath = str_replace('temp/', 'products/', $tempPath);
-
-                // Move file to the permanent location
-                Storage::disk('public')->move($tempPath, $newPath);
-
-                return [
-                    'url' => asset('storage/' . $newPath),
-                    'primary' => $decodedImage['url'] === $request->primary_image,
-                ];
-            })->toArray();
-
-            // Save the product to the database
-            Product::create([
-                'ar_name' => $request->ar_name,
-                'en_name' => $request->en_name,
-                'category_id' => $request->category_id,
-                'price' => $request->price,
-                'quantity' => $request->quantity,
-                'ar_description' => $request->ar_description,
-                'en_description' => $request->en_description,
-                'ar_features' => json_encode($request->ar_features), // Save as JSON
-                'en_features' => json_encode($request->en_features), // Save as JSON
-                'images' => $processedImages, // Save processed array as JSON
-                'ar_manufacturer' => $request->ar_manufacturer,
-                'en_manufacturer' => $request->en_manufacturer,
-            ]);
-
-            return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
-        } catch (\Exception $e) {
-            foreach ($imagesArray as $image) {
-                $decodedImage = json_decode($image, true);
-                $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
-                Storage::disk('public')->delete($tempPath); // Delete temp file
+            if (!is_array($imagesArray)) {
+                return redirect()->back()->withErrors(['images' => 'Invalid images format.']);
             }
 
-            return redirect()->back()->with('error', 'An error occurred while saving the product.');
+            if (count($imagesArray) > 0) {
+                try {
+                    // Process images array
+                    $processedImages = collect($imagesArray)->map(function ($image) use ($request) {
+                        $decodedImage = json_decode($image, true);
+                        $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
+                        $newPath = str_replace('temp/', 'products/', $tempPath);
+
+                        // Move file to the permanent location
+                        Storage::disk('public')->move($tempPath, $newPath);
+
+                        return [
+                            'url' => asset('storage/' . $newPath),
+                            'primary' => $decodedImage['url'] === $request->primary_image,
+                        ];
+                    })->toArray();
+                } catch (\Exception $e) {
+                    // Clean up any moved files on error
+                    foreach ($processedImages as $img) {
+                        if (isset($img['url'])) {
+                            $p = str_replace(asset('storage/'), '', $img['url']);
+                            Storage::disk('public')->delete($p);
+                        }
+                    }
+
+                    return redirect()->back()->with('error', 'An error occurred while saving the product.');
+                }
+            }
         }
+
+        // Save the product to the database
+        Product::create([
+            'ar_name' => $request->ar_name,
+            'en_name' => $request->en_name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'ar_description' => $request->ar_description,
+            'en_description' => $request->en_description,
+            'ar_features' => json_encode($request->ar_features), // Save as JSON
+            'en_features' => json_encode($request->en_features), // Save as JSON
+            'images' => $processedImages, // Save processed array as JSON (may be empty)
+            'ar_manufacturer' => $request->ar_manufacturer,
+            'en_manufacturer' => $request->en_manufacturer,
+        ]);
+
+        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
     public function upload(Request $request)
@@ -186,60 +194,76 @@ class ProductController extends Controller
 
         $product = Product::findOrFail($id);
 
-        $imagesArray = json_decode($request->images, true); // Decode JSON into an array
+        // If images were provided, process and replace; otherwise keep existing images
+        $processedImages = null;
 
-        if (!is_array($imagesArray)) {
-            return redirect()->back()->withErrors(['images' => 'Invalid images format.']);
-        }
+        if ($request->has('images')) {
+            $imagesArray = json_decode($request->images, true); // Decode JSON into an array
 
-        try {
-            // Delete old images
-            foreach ($product->images as $oldImage) {
-                $oldPath = str_replace(asset('storage/'), '', $oldImage['url']);
-                Storage::disk('public')->delete($oldPath);
+            if (!is_array($imagesArray)) {
+                return redirect()->back()->withErrors(['images' => 'Invalid images format.']);
             }
 
-            // Process images array
-            $processedImages = collect($imagesArray)->map(function ($image) use ($request) {
-                $decodedImage = json_decode($image, true);
-                $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
-                $newPath = str_replace('temp/', 'products/', $tempPath);
+            if (count($imagesArray) > 0) {
+                try {
+                    // Delete old images
+                    foreach ($product->images ?? [] as $oldImage) {
+                        if (isset($oldImage['url'])) {
+                            $oldPath = str_replace(asset('storage/'), '', $oldImage['url']);
+                            Storage::disk('public')->delete($oldPath);
+                        }
+                    }
 
-                // Move file to the permanent location
-                Storage::disk('public')->move($tempPath, $newPath);
+                    // Process images array
+                    $processedImages = collect($imagesArray)->map(function ($image) use ($request) {
+                        $decodedImage = json_decode($image, true);
+                        $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
+                        $newPath = str_replace('temp/', 'products/', $tempPath);
 
-                return [
-                    'url' => asset('storage/' . $newPath),
-                    'primary' => $decodedImage['url'] === $request->primary_image,
-                ];
-            })->toArray();
+                        // Move file to the permanent location
+                        Storage::disk('public')->move($tempPath, $newPath);
 
-            // Update the product in the database
-            $product->update([
-                'ar_name' => $request->ar_name,
-                'en_name' => $request->en_name,
-                'category_id' => $request->category_id,
-                'price' => $request->price,
-                'quantity' => $request->quantity,
-                'ar_description' => $request->ar_description,
-                'en_description' => $request->en_description,
-                'ar_features' => json_encode($request->ar_features),
-                'en_features' => json_encode($request->en_features),
-                'images' => $processedImages, // Save processed array as JSON
-                'ar_manufacturer' => $request->ar_manufacturer,
-                'en_manufacturer' => $request->en_manufacturer,
-            ]);
+                        return [
+                            'url' => asset('storage/' . $newPath),
+                            'primary' => $decodedImage['url'] === $request->primary_image,
+                        ];
+                    })->toArray();
+                } catch (\Exception $e) {
+                    // Clean up any moved files on error
+                    foreach ($processedImages ?? [] as $img) {
+                        if (isset($img['url'])) {
+                            $p = str_replace(asset('storage/'), '', $img['url']);
+                            Storage::disk('public')->delete($p);
+                        }
+                    }
 
-            return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
-        } catch (\Exception $e) {
-            foreach ($imagesArray as $image) {
-                $decodedImage = json_decode($image, true);
-                $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
-                Storage::disk('public')->delete($tempPath); // Delete temp file
+                    return redirect()->back()->with('error', 'An error occurred while updating the product.');
+                }
             }
-
-            return redirect()->back()->with('error', 'An error occurred while updating the product.');
         }
+
+        // Prepare update data
+        $updateData = [
+            'ar_name' => $request->ar_name,
+            'en_name' => $request->en_name,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'ar_description' => $request->ar_description,
+            'en_description' => $request->en_description,
+            'ar_features' => json_encode($request->ar_features),
+            'en_features' => json_encode($request->en_features),
+            'ar_manufacturer' => $request->ar_manufacturer,
+            'en_manufacturer' => $request->en_manufacturer,
+        ];
+
+        if (!is_null($processedImages)) {
+            $updateData['images'] = $processedImages;
+        }
+
+        $product->update($updateData);
+
+        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function deleteTempImage(Request $request)

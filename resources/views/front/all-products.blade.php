@@ -82,7 +82,10 @@
                                     <div class="single-product">
                                         <div class="product-image">
                                             @php
-                                                $primaryImage = collect($product->images)->firstWhere('primary', true)['url'] ?? $product->images[0]['url'] ?? 'path/to/default.jpg';
+                                                $placeholder = asset('images/no-image.svg');
+                                                $images = is_array($product->images) ? $product->images : (is_string($product->images) ? json_decode($product->images, true) : ($product->images ?? []));
+                                                $primary = collect($images)->firstWhere('primary', true);
+                                                $primaryImage = data_get($primary, 'url') ?? data_get($images, '0.url') ?? $placeholder;
                                             @endphp
                                             <img src="{{ $primaryImage }}" alt="{{ $product->en_name }}" height="250">
                                         </div>

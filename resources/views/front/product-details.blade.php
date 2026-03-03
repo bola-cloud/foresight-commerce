@@ -32,18 +32,23 @@
                     <div class="col-lg-6 col-md-12 col-12">
                         <div class="product-images">
                             <main id="gallery">
-                                @if (!empty($product->images))
-                                    <div class="main-img">
-                                        <img src="{{ collect($product->images)->firstWhere('primary', true)['url'] ?? $product->images[0]['url'] }}" height="400" id="current" alt="{{ app()->getLocale() === 'ar' ? $product->ar_name : $product->en_name }}">
-                                    </div>
+                                @php
+                                    $placeholder = asset('images/no-image.svg');
+                                    $images = is_array($product->images) ? $product->images : (is_string($product->images) ? json_decode($product->images, true) : ($product->images ?? []));
+                                    $primary = collect($images)->firstWhere('primary', true);
+                                    $primaryImage = data_get($primary, 'url') ?? data_get($images, '0.url') ?? $placeholder;
+                                @endphp
+
+                                <div class="main-img">
+                                    <img src="{{ $primaryImage }}" height="400" id="current" alt="{{ app()->getLocale() === 'ar' ? $product->ar_name : $product->en_name }}">
+                                </div>
+
+                                @if (!empty($images))
                                     <div class="images">
-                                        @foreach ($product->images as $image)
-                                            <img src="{{ $image['url'] }}" class="img" alt="{{ app()->getLocale() === 'ar' ? $product->ar_name : $product->en_name }}">
+                                        @foreach ($images as $image)
+                                            <img src="{{ data_get($image, 'url') }}" class="img" alt="{{ app()->getLocale() === 'ar' ? $product->ar_name : $product->en_name }}">
                                         @endforeach
                                     </div>
-                                @else
-                                    <!-- Fallback if no images are available -->
-                                    <img src="{{ asset('theme/assets/images/products/default.jpg') }}" class="img-thumbnail" alt="No image available">
                                 @endif
                             </main>
                         </div>
