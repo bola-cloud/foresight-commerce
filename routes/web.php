@@ -23,6 +23,7 @@ Route::group([
     ]
 ], function () {
     Route::get('/admin', [\App\Http\Controllers\Admin\Dashboard::class, 'index'])->name('dashboard');
+    Route::post('/categories/reorder', [\App\Http\Controllers\Admin\CategoryController::class, 'reorder'])->name('admin.categories.reorder');
     Route::resource('/admin/products', \App\Http\Controllers\Admin\ProductController::class)->names('admin.products');
     Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class)->names('admin.categories');
     Route::resource('adsliders', \App\Http\Controllers\Admin\AdSliderController::class)->names('admin.adsliders');

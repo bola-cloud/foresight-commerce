@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('order','asc')->get();
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -24,9 +24,14 @@ class CategoryController extends Controller
             'en_name' => 'required|string|max:255',
         ]);
 
+        // determine next order value
+        $maxOrder = Category::max('order');
+        $nextOrder = is_null($maxOrder) ? 1 : $maxOrder + 1;
+
         Category::create([
             'ar_name' => $request->ar_name,
             'en_name' => $request->en_name,
+            'order' => $nextOrder,
         ]);
 
         return redirect()->back()->with('success', __('lang.category_created'));
@@ -58,5 +63,22 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->back()->with('success', __('lang.category_deleted'));
+    }
+
+    /**
+     * Reorder categories via AJAX.
+     */
+    public function reorder(Request $request)
+    {
+        $order = $request->input('order'); // expected array of ids in new order
+        if (!is_array($order)) {
+            return response()->json(['message' => 'Invalid order data'], 422);
+        }
+
+        foreach ($order as $index => $id) {
+            Category::where('id', $id)->update(['order' => $index + 1]);
+        }
+
+        return response()->json(['message' => 'Order updated']);
     }
 }

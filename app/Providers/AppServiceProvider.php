@@ -24,7 +24,13 @@ class AppServiceProvider extends ServiceProvider
     {
         // Check if the 'categories' table exists before querying
         if (Schema::hasTable('categories')) {
-            $categories = Category::get();
+            // If the 'order' column exists, fetch ordered by it; otherwise fetch normally.
+            if (Schema::hasColumn('categories', 'order')) {
+                $categories = Category::orderBy('order', 'asc')->get();
+            } else {
+                $categories = Category::get();
+            }
+
             View::share('categories', $categories);
         }
     }

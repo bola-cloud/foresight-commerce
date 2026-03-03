@@ -19,7 +19,7 @@ class ProductsController extends Controller
 
     public function index(Request $request)
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('order','asc')->get();
 
         $query = Product::query();
 
@@ -54,7 +54,7 @@ class ProductsController extends Controller
 
     public function filterByCategory(Category $category)
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('order','asc')->get();
         $products = Product::where('category_id', $category->id)->paginate(12);
 
         return view('front.all-products', compact('products', 'categories', 'category'));

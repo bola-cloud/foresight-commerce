@@ -32,8 +32,8 @@ class ProductController extends Controller
             })
             ->paginate(10); // Paginate with 10 items per page
 
-        // Get all categories for the filter dropdown
-        $categories = Category::all();
+        // Get all categories for the filter dropdown ordered
+        $categories = Category::orderBy('order','asc')->get();
 
         // Return the view with the products, categories, and filters
         return view('admin.products.index', compact('products', 'categories', 'searchQuery', 'categoryId'));
@@ -44,7 +44,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('order','asc')->get();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -157,7 +157,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('order','asc')->get();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 

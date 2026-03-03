@@ -13,7 +13,7 @@ class HomeController extends Controller
     public function index()
     {
         $products = Product::all();
-        $categories = Category::all();
+        $categories = Category::orderBy('order','asc')->get();
         $sliders = AdSlider::all(); // Fetch all sliders
         return view('front.home', compact('products', 'categories', 'sliders'));
     }

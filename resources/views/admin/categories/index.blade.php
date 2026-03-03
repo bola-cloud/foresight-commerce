@@ -22,9 +22,9 @@
                 <th>{{ __('lang.actions') }}</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="categories-sortable">
             @foreach ($categories as $category)
-                <tr>
+                <tr data-id="{{ $category->id }}" style="cursor:move;">
                     <td>{{ $category->ar_name }}</td>
                     <td>{{ $category->en_name }}</td>
                     <td>
@@ -98,3 +98,39 @@
     </div>
 </div>
 @endsection
+
+@push('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const el = document.getElementById('categories-sortable');
+        if (!el) return;
+
+        const sortable = new Sortable(el, {
+            animation: 150,
+            handle: 'td',
+            onEnd: function () {
+                // collect ordered ids
+                const ids = Array.from(el.querySelectorAll('tr')).map(r => r.getAttribute('data-id'));
+
+                fetch("{{ route('admin.categories.reorder') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ order: ids })
+                }).then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                }).then(data => {
+                    // optionally show a toast / message
+                    console.log(data.message || 'Order saved');
+                }).catch(err => {
+                    console.error('Failed to save order', err);
+                    alert('Failed to save order');
+                });
+            }
+        });
+    });
+</script>
+@endpush
