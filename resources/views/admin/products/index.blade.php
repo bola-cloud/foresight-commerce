@@ -168,13 +168,15 @@
                             ids.push($(this).data('id'));
                         });
 
-                        // Send AJAX POST to reorder endpoint
+                        // Send AJAX POST to reorder endpoint with pagination context
                         $.ajax({
                             url: '{{ route('admin.products.reorder') }}',
                             method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}',
-                                ids: ids
+                                ids: ids,
+                                page: {{ $products->currentPage() }},
+                                per_page: {{ $products->perPage() }}
                             },
                             success: function(res) {
                                 // Optionally show a success message

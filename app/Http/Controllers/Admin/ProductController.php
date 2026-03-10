@@ -305,13 +305,20 @@ class ProductController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'integer|exists:products,id'
+            'ids.*' => 'integer|exists:products,id',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer|min:1'
         ]);
 
         $ids = $request->ids;
+        $page = (int) $request->get('page', 1);
+        $perPage = (int) $request->get('per_page', 10);
+
+        // Compute global offset so items on page N get proper global positions
+        $start = ($page - 1) * $perPage;
 
         foreach ($ids as $index => $id) {
-            Product::where('id', $id)->update(['order' => $index + 1]);
+            Product::where('id', $id)->update(['order' => $start + $index + 1]);
         }
 
         return response()->json(['success' => true]);
