@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -320,6 +321,51 @@ class ProductController extends Controller
         foreach ($ids as $index => $id) {
             Product::where('id', $id)->update(['order' => $start + $index + 1]);
         }
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Move a single product to a given global position (reindex all products afterwards).
+     * Expects: `id` (product id) and optional `position` (1-based). If position omitted, moves to 1.
+     */
+    public function move(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:products,id',
+            'position' => 'nullable|integer|min:1'
+        ]);
+
+        $id = $request->id;
+        $position = max(1, (int) $request->get('position', 1));
+
+        DB::transaction(function () use ($id, $position) {
+            // Fetch all products, treating null `order` as very large so they come last
+            $products = Product::orderByRaw('COALESCE(`order`, 999999) ASC, id ASC')->get()->keyBy('id');
+
+            // If product not in collection for any reason, reload and fail
+            if (!isset($products[$id])) {
+                throw new \Exception('Product not found in ordering set.');
+            }
+
+            // Remove the product and insert at target position
+            $moving = $products->pull($id);
+
+            // Convert to indexed array and insert
+            $items = $products->values()->all();
+
+            // Ensure position within bounds
+            $total = count($items) + 1; // after reinserting
+            $position = min($position, $total);
+
+            array_splice($items, $position - 1, 0, [$moving]);
+
+            // Reindex sequentially starting from 1
+            foreach ($items as $index => $product) {
+                $product->order = $index + 1;
+                $product->save();
+            }
+        });
 
         return response()->json(['success' => true]);
     }

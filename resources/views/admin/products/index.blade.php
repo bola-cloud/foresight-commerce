@@ -81,6 +81,7 @@
                             {{ __('lang.view_images') }}
                         </button>
                         <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-warning btn-sm">{{ __('lang.edit') }}</a>
+                        <button class="btn btn-secondary btn-sm move-to-top" data-id="{{ $product->id }}">Move to Top</button>
                         <form action="{{ route('admin.products.destroy', $product) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -191,6 +192,24 @@
         } catch (e) {
             console.error('Sortable init error', e);
         }
+            // Move to top handler
+            $(document).on('click', '.move-to-top', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                if (!confirm('Move this product to the top of the list?')) return;
+
+                $.ajax({
+                    url: '{{ route('admin.products.move') }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: id,
+                        position: 1
+                    },
+                    success: function() { location.reload(); },
+                    error: function() { alert('Failed to move product.'); }
+                });
+            });
     });
 </script>
 @endpush
