@@ -31,6 +31,7 @@
                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $category->id }}">
                             {{ __('lang.edit') }}
                         </button>
+                        <button class="btn btn-secondary btn-sm move-to-top" data-id="{{ $category->id }}">{{ __('lang.move_to_top') }}</button>
                         <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -111,7 +112,6 @@
             onEnd: function () {
                 // collect ordered ids
                 const ids = Array.from(el.querySelectorAll('tr')).map(r => r.getAttribute('data-id'));
-
                 fetch("{{ route('admin.categories.reorder') }}", {
                     method: 'POST',
                     headers: {
@@ -130,6 +130,29 @@
                     alert('Failed to save order');
                 });
             }
+        });
+    });
+
+    // Move to top handler
+    document.addEventListener('click', function (e) {
+        if (!e.target.classList.contains('move-to-top')) return;
+        e.preventDefault();
+        var id = e.target.getAttribute('data-id');
+        if (!confirm('Move this category to the top of the list?')) return;
+
+        fetch("{{ route('admin.categories.move') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ id: id, position: 1 })
+        }).then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            location.reload();
+        }).catch(err => {
+            console.error('Failed to move category', err);
+            alert('Failed to move category');
         });
     });
 </script>

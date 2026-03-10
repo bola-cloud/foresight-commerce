@@ -324,4 +324,5 @@ return [
     'menu_blogs' => 'Blogs',
     'no_image_available' => 'No image available',
     'blogs_details' => 'Blog Details',
+    'move_to_top' => 'Move to Top',
 ];

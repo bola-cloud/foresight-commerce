@@ -308,4 +308,5 @@ return [
     'menu_blogs' => 'المدونات',
     'no_image_available' => 'لا توجد صورة متاحة',
     'blogs_details' => 'تفاصيل المدونة',
+    'move_to_top' => 'نقل إلى الأعلى',
 ];

@@ -81,7 +81,7 @@
                             {{ __('lang.view_images') }}
                         </button>
                         <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-warning btn-sm">{{ __('lang.edit') }}</a>
-                        <button class="btn btn-secondary btn-sm move-to-top" data-id="{{ $product->id }}">Move to Top</button>
+                        <button class="btn btn-secondary btn-sm move-to-top" data-id="{{ $product->id }}">{{ __('lang.move_to_top') }}</button>
                         <form action="{{ route('admin.products.destroy', $product) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')

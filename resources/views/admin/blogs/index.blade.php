@@ -30,6 +30,7 @@
                     <td>{{ $blog->en_title }}</td>
                     <td>
                         <a href="{{ route('admin.blogs.edit', $blog) }}" class="btn btn-warning btn-sm">{{ __('lang.edit') }}</a>
+                        <button class="btn btn-secondary btn-sm move-to-top" data-id="{{ $blog->id }}">{{ __('lang.move_to_top') }}</button>
                         <form action="{{ route('admin.blogs.destroy', $blog) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -67,7 +68,9 @@
                             method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}',
-                                ids: ids
+                                ids: ids,
+                                page: {{ $blogs->currentPage() }},
+                                per_page: {{ $blogs->perPage() }}
                             },
                             success: function(res) {},
                             error: function() { alert('Failed to save blog order.'); }
@@ -76,6 +79,25 @@
                 });
             }
         } catch (e) { console.error('Sortable init error', e); }
+    });
+
+    // Move to top handler
+    $(document).on('click', '.move-to-top', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        if (!confirm('Move this blog to the top of the list?')) return;
+
+        $.ajax({
+            url: '{{ route('admin.blogs.move') }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                id: id,
+                position: 1
+            },
+            success: function() { location.reload(); },
+            error: function() { alert('Failed to move blog.'); }
+        });
     });
 </script>
 @endpush

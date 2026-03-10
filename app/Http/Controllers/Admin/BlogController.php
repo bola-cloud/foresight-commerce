@@ -8,6 +8,7 @@ use App\Models\Blog;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class BlogController extends Controller
 {
@@ -80,6 +81,40 @@ class BlogController extends Controller
         foreach ($ids as $index => $id) {
             Blog::where('id', $id)->update(['order' => $index + 1]);
         }
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Move a single blog to a given global position (reindex all blogs afterwards).
+     */
+    public function move(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:blogs,id',
+            'position' => 'nullable|integer|min:1'
+        ]);
+
+        $id = $request->id;
+        $position = max(1, (int) $request->get('position', 1));
+
+        DB::transaction(function () use ($id, $position) {
+            $items = Blog::orderByRaw('COALESCE(`order`, 999999) ASC, id ASC')->get()->keyBy('id');
+            if (!isset($items[$id])) {
+                throw new \Exception('Blog not found in ordering set.');
+            }
+
+            $moving = $items->pull($id);
+            $arr = $items->values()->all();
+            $total = count($arr) + 1;
+            $position = min($position, $total);
+            array_splice($arr, $position - 1, 0, [$moving]);
+
+            foreach ($arr as $index => $blog) {
+                $blog->order = $index + 1;
+                $blog->save();
+            }
+        });
 
         return response()->json(['success' => true]);
     }

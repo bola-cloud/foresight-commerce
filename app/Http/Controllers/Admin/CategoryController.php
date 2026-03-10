@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -80,5 +81,39 @@ class CategoryController extends Controller
         }
 
         return response()->json(['message' => 'Order updated']);
+    }
+
+    /**
+     * Move a single category to a given global position (reindex all categories afterwards).
+     */
+    public function move(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:categories,id',
+            'position' => 'nullable|integer|min:1'
+        ]);
+
+        $id = $request->id;
+        $position = max(1, (int) $request->get('position', 1));
+
+        DB::transaction(function () use ($id, $position) {
+            $items = Category::orderByRaw('COALESCE(`order`, 999999) ASC, id ASC')->get()->keyBy('id');
+            if (!isset($items[$id])) {
+                throw new \Exception('Category not found in ordering set.');
+            }
+
+            $moving = $items->pull($id);
+            $arr = $items->values()->all();
+            $total = count($arr) + 1;
+            $position = min($position, $total);
+            array_splice($arr, $position - 1, 0, [$moving]);
+
+            foreach ($arr as $index => $category) {
+                $category->order = $index + 1;
+                $category->save();
+            }
+        });
+
+        return response()->json(['success' => true]);
     }
 }
