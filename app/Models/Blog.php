@@ -9,7 +9,7 @@ class Blog extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['ar_title', 'en_title', 'slug', 'ar_content', 'en_content', 'image'];
+    protected $fillable = ['ar_title', 'en_title', 'slug', 'ar_content', 'en_content', 'image', 'order'];
 
     // Function to return title based on language
     public function getTitleAttribute()

@@ -53,9 +53,9 @@
                 <th>{{ __('lang.actions') }}</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="products-tbody">
             @foreach ($products as $product)
-                <tr class="product-item" data-category="{{ $product->category ? $product->category->id : '' }}">
+            <tr class="product-item" data-id="{{ $product->id }}" data-category="{{ $product->category ? $product->category->id : '' }}">
                     <td>
                         @php
                             $images = is_string($product->images) ? json_decode($product->images, true) : $product->images;
@@ -149,6 +149,46 @@
             let categoryId = $(this).val();
             window.location.href = '{{ route('admin.products.index') }}?search=' + $('#search').val() + '&category=' + categoryId;
         });
+    });
+</script>
+@endpush
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    $(function() {
+        // Initialize Sortable on products tbody for ordering
+        try {
+            var el = document.getElementById('products-tbody');
+            if (el) {
+                new Sortable(el, {
+                    animation: 150,
+                    onEnd: function () {
+                        var ids = [];
+                        $('#products-tbody tr').each(function() {
+                            ids.push($(this).data('id'));
+                        });
+
+                        // Send AJAX POST to reorder endpoint
+                        $.ajax({
+                            url: '{{ route('admin.products.reorder') }}',
+                            method: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: ids
+                            },
+                            success: function(res) {
+                                // Optionally show a success message
+                            },
+                            error: function() {
+                                alert('Failed to save order.');
+                            }
+                        });
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('Sortable init error', e);
+        }
     });
 </script>
 @endpush

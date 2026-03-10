@@ -22,6 +22,7 @@ class Product extends Model
         'ar_manufacturer',
         'en_manufacturer',
         'images',
+        'order',
     ];
 
     /**

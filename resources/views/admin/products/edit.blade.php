@@ -67,7 +67,18 @@
         <div class="form-group">
             <label for="ar_features">{{ __('lang.ar_features') }}</label>
             <div id="ar-features-wrapper">
-                @foreach (json_decode($product->ar_features, true) ?? [''] as $feature)
+                @php
+                    $arFeatures = $product->ar_features;
+                    if (is_string($arFeatures)) {
+                        $decoded = json_decode($arFeatures, true);
+                        $arFeatures = is_array($decoded) ? $decoded : [];
+                    }
+                    if (!is_array($arFeatures) || count($arFeatures) === 0) {
+                        $arFeatures = [''];
+                    }
+                @endphp
+
+                @foreach ($arFeatures as $feature)
                     <div class="input-group mb-2">
                         <input type="text" name="ar_features[]" class="form-control" value="{{ $feature }}" placeholder="{{ __('lang.enter_feature') }}">
                         <button type="button" class="btn btn-danger remove-feature">-</button>
@@ -80,7 +91,18 @@
         <div class="form-group">
             <label for="en_features">{{ __('lang.en_features') }}</label>
             <div id="en-features-wrapper">
-                @foreach (json_decode($product->en_features, true) ?? [''] as $feature)
+                @php
+                    $enFeatures = $product->en_features;
+                    if (is_string($enFeatures)) {
+                        $decodedEn = json_decode($enFeatures, true);
+                        $enFeatures = is_array($decodedEn) ? $decodedEn : [];
+                    }
+                    if (!is_array($enFeatures) || count($enFeatures) === 0) {
+                        $enFeatures = [''];
+                    }
+                @endphp
+
+                @foreach ($enFeatures as $feature)
                     <div class="input-group mb-2">
                         <input type="text" name="en_features[]" class="form-control" value="{{ $feature }}" placeholder="{{ __('lang.enter_feature') }}">
                         <button type="button" class="btn btn-danger remove-feature">-</button>

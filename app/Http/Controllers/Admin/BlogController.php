@@ -7,12 +7,20 @@ use Illuminate\Http\Request;
 use App\Models\Blog;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::latest()->paginate(10);
+        $query = Blog::query();
+        if (Schema::hasColumn('blogs', 'order')) {
+            $query = $query->orderBy('order', 'asc');
+        } else {
+            $query = $query->latest();
+        }
+
+        $blogs = $query->paginate(10);
         return view('admin.blogs.index', compact('blogs'));
     }
 
@@ -43,6 +51,10 @@ class BlogController extends Controller
             $blog->image = $imagePath;
         }
 
+        if (Schema::hasColumn('blogs', 'order')) {
+            $blog->order = Blog::max('order') + 1;
+        }
+
         $blog->save();
 
         return redirect()->route('admin.blogs.index')->with('success', 'Blog added successfully!');
@@ -51,6 +63,25 @@ class BlogController extends Controller
     public function edit(Blog $blog)
     {
         return view('admin.blogs.edit', compact('blog'));
+    }
+
+    /**
+     * Reorder blogs via AJAX. Expects `ids` => [id1, id2, ...]
+     */
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:blogs,id'
+        ]);
+
+        $ids = $request->ids;
+
+        foreach ($ids as $index => $id) {
+            Blog::where('id', $id)->update(['order' => $index + 1]);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     public function update(Request $request, Blog $blog)

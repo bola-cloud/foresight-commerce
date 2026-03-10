@@ -7,12 +7,19 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\AdSlider;
+use Illuminate\Support\Facades\Schema;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        // Default to ordered products when `order` column exists
+        $productsQuery = Product::query();
+        if (Schema::hasColumn('products', 'order')) {
+            $products = $productsQuery->orderBy('order', 'asc')->get();
+        } else {
+            $products = $productsQuery->get();
+        }
         $categories = Category::orderBy('order','asc')->get();
         $sliders = AdSlider::all(); // Fetch all sliders
         return view('front.home', compact('products', 'categories', 'sliders'));

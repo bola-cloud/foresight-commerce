@@ -16,9 +16,9 @@
                 <th>{{ __('lang.actions') }}</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="blogs-tbody">
             @foreach ($blogs as $blog)
-                <tr>
+                <tr data-id="{{ $blog->id }}">
                     <td>
                         @if ($blog->image)
                             <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->en_title }}" class="img-thumbnail" width="100">
@@ -46,3 +46,36 @@
     </div>
 </div>
 @endsection
+
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    $(function() {
+        try {
+            var el = document.getElementById('blogs-tbody');
+            if (el) {
+                new Sortable(el, {
+                    animation: 150,
+                    onEnd: function () {
+                        var ids = [];
+                        $('#blogs-tbody tr').each(function() {
+                            ids.push($(this).data('id'));
+                        });
+
+                        $.ajax({
+                            url: '{{ route('admin.blogs.reorder') }}',
+                            method: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                ids: ids
+                            },
+                            success: function(res) {},
+                            error: function() { alert('Failed to save blog order.'); }
+                        });
+                    }
+                });
+            }
+        } catch (e) { console.error('Sortable init error', e); }
+    });
+</script>
+@endpush

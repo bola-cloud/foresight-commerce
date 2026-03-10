@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class ProductController extends Controller
 {
@@ -20,7 +21,7 @@ class ProductController extends Controller
         $categoryId = $request->get('category', '');
 
         // Query products with their categories and apply search/filter conditions
-        $products = Product::with('category')
+        $productsQuery = Product::with('category')
             ->when($searchQuery, function($query, $searchQuery) {
                 return $query->where(function($query) use ($searchQuery) {
                     $query->where('ar_name', 'like', "%$searchQuery%")
@@ -30,7 +31,14 @@ class ProductController extends Controller
             ->when($categoryId, function($query, $categoryId) {
                 return $query->where('category_id', $categoryId);
             })
-            ->paginate(10); // Paginate with 10 items per page
+        ;
+
+        // Order by `order` column when it exists; otherwise keep default ordering
+        if (Schema::hasColumn('products', 'order')) {
+            $productsQuery = $productsQuery->orderBy('order', 'asc');
+        }
+
+        $products = $productsQuery->paginate(10); // Paginate with 10 items per page
 
         // Get all categories for the filter dropdown ordered
         $categories = Category::orderBy('order','asc')->get();
@@ -73,18 +81,23 @@ class ProductController extends Controller
         $processedImages = [];
 
         // Only process images if they were sent and the decoded array is non-empty
-        if ($request->has('images')) {
-            $imagesArray = json_decode($request->images, true); // Decode JSON into an array
+        if ($request->has('images') && strlen(trim((string) $request->images)) > 0) {
+            if (is_array($request->images)) {
+                $imagesArray = $request->images;
+            } else {
+                $imagesArray = json_decode($request->images, true); // Decode JSON into an array
+            }
 
+            // If decoding failed or it's not an array, treat as no images provided
             if (!is_array($imagesArray)) {
-                return redirect()->back()->withErrors(['images' => 'Invalid images format.']);
+                $imagesArray = [];
             }
 
             if (count($imagesArray) > 0) {
                 try {
                     // Process images array
                     $processedImages = collect($imagesArray)->map(function ($image) use ($request) {
-                        $decodedImage = json_decode($image, true);
+                        $decodedImage = is_string($image) ? json_decode($image, true) : $image;
                         $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
                         $newPath = str_replace('temp/', 'products/', $tempPath);
 
@@ -93,7 +106,7 @@ class ProductController extends Controller
 
                         return [
                             'url' => asset('storage/' . $newPath),
-                            'primary' => $decodedImage['url'] === $request->primary_image,
+                            'primary' => (isset($decodedImage['url']) && $decodedImage['url'] === $request->primary_image),
                         ];
                     })->toArray();
                 } catch (\Exception $e) {
@@ -122,6 +135,7 @@ class ProductController extends Controller
             'ar_features' => json_encode($request->ar_features), // Save as JSON
             'en_features' => json_encode($request->en_features), // Save as JSON
             'images' => $processedImages, // Save processed array as JSON (may be empty)
+            'order' => (Schema::hasColumn('products', 'order') ? (Product::max('order') + 1) : null),
             'ar_manufacturer' => $request->ar_manufacturer,
             'en_manufacturer' => $request->en_manufacturer,
         ]);
@@ -197,11 +211,15 @@ class ProductController extends Controller
         // If images were provided, process and replace; otherwise keep existing images
         $processedImages = null;
 
-        if ($request->has('images')) {
-            $imagesArray = json_decode($request->images, true); // Decode JSON into an array
+        if ($request->has('images') && strlen(trim((string) $request->images)) > 0) {
+            if (is_array($request->images)) {
+                $imagesArray = $request->images;
+            } else {
+                $imagesArray = json_decode($request->images, true); // Decode JSON into an array
+            }
 
             if (!is_array($imagesArray)) {
-                return redirect()->back()->withErrors(['images' => 'Invalid images format.']);
+                $imagesArray = [];
             }
 
             if (count($imagesArray) > 0) {
@@ -216,7 +234,7 @@ class ProductController extends Controller
 
                     // Process images array
                     $processedImages = collect($imagesArray)->map(function ($image) use ($request) {
-                        $decodedImage = json_decode($image, true);
+                        $decodedImage = is_string($image) ? json_decode($image, true) : $image;
                         $tempPath = str_replace(asset('storage/'), '', $decodedImage['url']);
                         $newPath = str_replace('temp/', 'products/', $tempPath);
 
@@ -225,7 +243,7 @@ class ProductController extends Controller
 
                         return [
                             'url' => asset('storage/' . $newPath),
-                            'primary' => $decodedImage['url'] === $request->primary_image,
+                            'primary' => (isset($decodedImage['url']) && $decodedImage['url'] === $request->primary_image),
                         ];
                     })->toArray();
                 } catch (\Exception $e) {
@@ -278,6 +296,25 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to delete file.'], 500);
         }
+    }
+
+    /**
+     * Reorder products via AJAX. Expects `ids` => [id1, id2, ...]
+     */
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:products,id'
+        ]);
+
+        $ids = $request->ids;
+
+        foreach ($ids as $index => $id) {
+            Product::where('id', $id)->update(['order' => $index + 1]);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     /**

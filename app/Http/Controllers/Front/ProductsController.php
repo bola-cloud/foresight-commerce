@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Schema;
 
 class ProductsController extends Controller
 {
@@ -47,6 +48,11 @@ class ProductsController extends Controller
             }
         }
 
+        // Default ordering by `order` when available and no explicit sorting provided
+        if (!($request->has('sort') && !empty($request->sort)) && Schema::hasColumn('products', 'order')) {
+            $query->orderBy('order', 'asc');
+        }
+
         $products = $query->paginate(12); // Adjust pagination count as needed
 
         return view('front.all-products', compact('products', 'categories'));
@@ -55,7 +61,12 @@ class ProductsController extends Controller
     public function filterByCategory(Category $category)
     {
         $categories = Category::orderBy('order','asc')->get();
-        $products = Product::where('category_id', $category->id)->paginate(12);
+        $productsQuery = Product::where('category_id', $category->id);
+        if (Schema::hasColumn('products', 'order')) {
+            $productsQuery = $productsQuery->orderBy('order', 'asc');
+        }
+
+        $products = $productsQuery->paginate(12);
 
         return view('front.all-products', compact('products', 'categories', 'category'));
     }
